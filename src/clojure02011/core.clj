@@ -291,16 +291,15 @@ drugo 6 true}
     (== 2 n) true
     (even? n) false
     :else (->> (range 3 (inc (Math/sqrt n)) 2)   ;uzima sve neparne vrednosti od 3 do koren iz broja uvecanog za jedan
-            ;(println n)
             (filter #(zero? (rem n %)))          ;rem - funkcija koja daje ostatak pri deljenju (kao mod) ima neka razlika kod negativnih brojeva
             empty?)))                            ;ako je resenje prethodne pitalice 0 onda nije prost broj.
-(time (prime? -1125899906842679))
+;(time (prime? 1125899906842679))
 ;(let [m-prime? (memoize prime?)]
 ;(time (m-prime? 1125899906842679))
 ;(time (m-prime? 1125899906842679)))
 
-
-
+(repeatedly 10 (partial rand-int 10))
+;(3 0 5 5 8 7 0 9 0 3)
 
 
 
