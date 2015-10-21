@@ -223,11 +223,61 @@ drugo 6 true}
 ;((doubler -) 1 2 3 4 5 6)
 ;-38       dobija se kao (1-2-3-4-5-6)*2
 
+;logger
 (defn print-logger
-  [writer]
-  #(binding [*out* writer]
+  [tekst]
+  #(binding [*out* tekst]
      (println %)))
+(def out-logger (print-logger *out*))
+;(out-logger "hello Key")
+;hello Key
 
-(def writer (java.io.StringWriter.))
-(def retained-logger (print-logger writer))
+(def strwriter (java.io.StringWriter.))
+(def retained-logger (print-logger strwriter))           ;upisuje stampu u strwriter
 (retained-logger "hello Klap")
+;(str strwriter)
+;"hello Klap\r\n"
+
+(require 'clojure.java.io)
+(defn file-logger
+  [file]
+  #(with-open [f (clojure.java.io/writer file :append true)]  ;ako je append true, dodajr liniju trksta, ako je false brise i upisuje samo ovaj tekst
+     ((print-logger f) %)))
+
+;(def log->file (file-logger "messages.log"))
+;(log->file "hello1")     ;upisuje tekst u "message.log"  - poziva komandu za upisivanje teksta u fajl
+
+;multi logger
+(defn multi-logger
+  [& logger-fns]
+  #(doseq [f logger-fns]
+     (f %)))
+
+(def log (multi-logger
+           (print-logger *out*)
+           (file-logger "messages.log")))
+;(log "hello again")
+
+;time logger
+(defn timestamped-logger
+  [logger]
+  #(logger (format "[%1$tY-%1$tm-%1$te %1$tH:%1$tM:%1$tS] %2$s" (java.util.Date.) %)))
+(def log-timestamped (timestamped-logger
+                       (multi-logger
+                         (print-logger *out*)
+                         (file-logger "messages.log"))))
+(log-timestamped "goodbye, now")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
