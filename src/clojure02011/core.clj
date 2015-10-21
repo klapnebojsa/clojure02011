@@ -266,10 +266,38 @@ drugo 6 true}
                        (multi-logger
                          (print-logger *out*)
                          (file-logger "messages.log"))))
-(log-timestamped "goodbye, now")
+;(log-timestamped "goodbye, now")
+
+(require 'clojure.xml)
+(defn twitter-followers
+  [username]
+  (->> (str "https://twitter.com/" username)
+    ;(println (str (clojure.string/replace (str "https://twitter.com/" username) #"></noscript>" "></meta></noscript>")))
+    clojure.xml/parse
+    :content
+    (filter (comp #{:followers_count} :tag))
+    first
+    :content
+    first
+    Integer/parseInt))
+;(twitter-followers "Power99Philly")
 
 
-
+;prosti brojevi
+(defn prime?
+  [n]
+  (cond
+    (== 1 n) false
+    (== 2 n) true
+    (even? n) false
+    :else (->> (range 3 (inc (Math/sqrt n)) 2)   ;uzima sve neparne vrednosti od 3 do koren iz broja uvecanog za jedan
+            ;(println n)
+            (filter #(zero? (rem n %)))          ;rem - funkcija koja daje ostatak pri deljenju (kao mod) ima neka razlika kod negativnih brojeva
+            empty?)))                            ;ako je resenje prethodne pitalice 0 onda nije prost broj.
+(time (prime? -1125899906842679))
+;(let [m-prime? (memoize prime?)]
+;(time (m-prime? 1125899906842679))
+;(time (m-prime? 1125899906842679)))
 
 
 
